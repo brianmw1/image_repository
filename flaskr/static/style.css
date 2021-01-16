@@ -9,7 +9,7 @@ html {
     margin: 0 auto;
     background: white;
   }
-  
+
   h1, h2, h3, h4, h5, h6 {
     font-family: serif;
     color: #377ba8;
@@ -96,10 +96,12 @@ html {
     font-style: italic;
   }
   
-  .post .body {
-    white-space: pre-line;
-  }
-  
+  /* .box {
+    width: 500px;
+    height: 500px;
+  } */
+
+
   .content:last-child {
     margin-bottom: 0;
   }
