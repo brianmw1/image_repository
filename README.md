@@ -15,23 +15,13 @@ This project will need Python3 installed.
 
 You should create a virtual environment for this project. 
 Open a cmd (or terminal) and change directories to the top level of this project. Then:
-`py -3 -m venv env`
-
-`.\env\Scripts\activate`
-
-To deactivate later use `deactivate` whilst in the same directory.
-
-`pip install -e .`
-
-`SET FLASK_APP=flaskr` This will be different if you use macOS or Linux, I developed this project on a windows 10 machine
-
-Once you have installed the application then initialize the database
-
-`flask init-db`
-
-Then run the server
-
-`flask run`
-
+`py -3 -m venv env`\
+`.\env\Scripts\activate`\
+To deactivate later use `deactivate` whilst in the same directory.\
+`pip install -e .`\
+`SET FLASK_APP=flaskr` This will be different if you use macOS or Linux, I developed this project on a windows 10 machine\
+Once you have installed the application then initialize the database\
+`flask init-db`\
+Then run the server\
+`flask run`\
 Go to `http://127.0.0.1:5000/`
-
