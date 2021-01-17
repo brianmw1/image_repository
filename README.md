@@ -14,7 +14,7 @@ The project was built using flask because I was most comfortable with Python and
 This project will need Python3 installed.
 
 You should create a virtual environment for this project. 
-Open a cmd (or terminal) and change directories to the top level of this project. Then:
+Open a cmd (or terminal) and change directories to the top level of this project. Then:\
 `py -3 -m venv env`\
 `.\env\Scripts\activate`\
 To deactivate later use `deactivate` whilst in the same directory.\
