@@ -13,19 +13,11 @@ import os
 VALID_FILE_TYPES={'jpg', 'png', 'jpeg'}
 IMAGE_FOLDER = './flaskr/static/images'
 
-bp = Blueprint('blog', __name__)
+bp = Blueprint('blog', __name__)\
 
-#home page
-@bp.route('/')
-def index():
-    db = get_db()
-    posts = db.execute(
-        'select p.id, title, image, created, author_id, username'
-        ' from post p join user u on p.author_id = u.id'
-        ' order by created desc'
-    ).fetchall()
-    return render_template('blog/index.html', posts = posts)
+#helper functions ----------------------------------------------
 
+#check if filename is a valid image file
 def valid_file(filename):
     if filename.split('.')[-1].lower() in VALID_FILE_TYPES:
         return True
@@ -37,6 +29,30 @@ def make_unique(string):
     id = uuid1().__str__()[:10]
     return id + "-" + string
 
+#-----------------------------------------------------------------
+
+#home page
+@bp.route('/')
+def index():
+    db = get_db()
+    posts = db.execute(
+        'select p.id, title, image, created, author_id, private, username'
+        ' from post p join user u on p.author_id = u.id'
+        ' order by created desc'
+    ).fetchall()
+    
+    #check the queried posts' privacy level and render template based on that.
+    temp = []
+    for post in posts:
+        #check if the post is private and the current post's id is not the same as current session's id, then remove it from posts to be rendered
+        if post['private'] == 0:
+            temp.append(post)
+        elif g.user:
+            if post['author_id'] == g.user['id'] and post['private'] == 1:
+                temp.append(post)
+
+    return render_template('blog/index.html', posts = temp)
+
 
 #create page
 @bp.route('/create', methods=('GET','POST'))
@@ -44,6 +60,14 @@ def make_unique(string):
 def create():
     if request.method == 'POST':
         title = request.form['title']
+
+        #is_private variable uses 0/1 integers since SQLite3 doesn't allow for boolean values anyways
+        print(request.form['privacy'])
+        if request.form['privacy'] == 'private':
+            is_private = 1
+        else:
+            is_private = 0
+        
         error = None
 
         if not title:
@@ -66,6 +90,7 @@ def create():
         else:
             db = get_db()
             for file in files:
+                print(is_private)
                 #rename the file to unique file
                 unique_filename = make_unique(secure_filename(file.filename))
 
@@ -74,36 +99,11 @@ def create():
 
                 #saving data to db
                 db.execute(
-                    'insert into post (title, image, author_id)'
-                    ' values (?,?,?)',
-                    (title, unique_filename, g.user['id'])
+                    'insert into post (title, image, author_id, private)'
+                    ' values (?,?,?,?)',
+                    (title, unique_filename, g.user['id'], is_private)
                 )
             db.commit()
             return redirect(url_for('blog.index'))
     
     return render_template('blog/create.html')
-
-def get_post(id, check_author=True):
-    post = get_db().execute(
-        'select p.id, title, body, created, author_id, username'
-        ' from post p join user u on p.author_id = u.id'
-        ' where p.id = ?',
-        (id,)
-    ).fetchone()
-
-    if post is None:
-        abort(404, "Post id {0} doesn't exist.".format(id))\
-
-    if check_author and post['author_id'] != g.user['id']:
-        abort(403)
-
-    return post
-
-@bp.route('/<int:id>/delete', methods=('GET', 'POST'))
-@login_required
-def delete(id):
-    get_post(id)
-    db = get_db()
-    db.execute('delete from post where id = ?', (id,))
-    db.commit()
-    return redirect(url_for('blog.index'))

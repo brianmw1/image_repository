@@ -10,6 +10,11 @@
         <input name="title" id="title" value="{{ request.form['title'] }}" required>
         <label for="image">Image</label>
         <input type="file" name="files" required multiple="true">
+        <label for="privacy">Privacy</label>
+        <select name="privacy" id="privacy">
+            <option value="public">Public</option>
+            <option value="private">Private</option>
+        </select>
         <input type="submit" value="Save">
     </form>
 {% endblock %}
