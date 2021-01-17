@@ -4,6 +4,7 @@
 <nav>
     <h1>Image Repository</h1>
     <ul>
+        <li><a href="{{ url_for('blog.index') }}">Home</a></li>
         {% if g.user %}
             <li><span> {{ g.user['username'] }}</span></li>
             <li><a href="{{ url_for('auth.logout') }}">Log Out</a></li>

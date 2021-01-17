@@ -25,7 +25,7 @@ def register():
         elif db.execute(
             'select id from user where username = ?', (username,)
         ).fetchone() is not None:
-            error = 'User {} is already registered'.format(username)
+            error = 'User ' + username + ' is already registered'
 
         """if the requested user registration is valid,
             then insert the new user into the db,
