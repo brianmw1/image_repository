@@ -5,7 +5,7 @@ Flask
     -Minimal framework to create a web app. Django seemed to complex to learn quickly. A CLI app did not seem sufficient.
 sqlite3 db
     -sqlite3 is simple for a small project plus it allows me to locally store the db file. Anything else is too complex for this project's scope.
-    -images table
+    -post table
         -title
         -description
         -image
