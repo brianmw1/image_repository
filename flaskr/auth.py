@@ -13,6 +13,7 @@ def register():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
+        STARTING_BALANCE = 500
         db = get_db()
         error = None
         #username field is empty
@@ -33,8 +34,8 @@ def register():
         """
         if error is None:
             db.execute(
-                'insert into user (username, password) VALUES(?,?)',
-                (username, generate_password_hash(password))
+                'insert into users (username, password, balance) VALUES(?,?,?)',
+                (username, generate_password_hash(password), STARTING_BALANCE)
             )
             db.commit()
             return redirect(url_for('auth.login'))
@@ -51,15 +52,12 @@ def login():
         db = get_db()
         error = None
         user = db.execute(
-            'select * from user where username = ?', (username,)
+            'select * from users where username = ?', (username,)
         ).fetchone()
         
-        #user does not exist in db
-        if user is None:
-            error = 'Incorrect username.'
-        #password entered does not match password in db
-        elif not check_password_hash(user['password'], password):
-            error = 'Incorrect password.'
+        #user does not exist in db or password is incorrect
+        if user is None or not check_password_hash(user['password'], password):
+            error = 'Incorrect username or password.'
         
         #no error is found store the user's id to the session then redirect to home page
         if error is None:
@@ -85,7 +83,7 @@ def load_logged_in_user():
         g.user = None
     else:
         g.user = get_db().execute(
-            'SELECT * FROM user where id = ?', (user_id,)
+            'SELECT * FROM users where id = ?', (user_id,)
         ).fetchone()
 
 #logging out, simply remove user info from session

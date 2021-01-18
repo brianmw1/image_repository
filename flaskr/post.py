@@ -13,7 +13,7 @@ import os
 VALID_FILE_TYPES={'jpg', 'png', 'jpeg'}
 IMAGE_FOLDER = './flaskr/static/images'
 
-bp = Blueprint('blog', __name__)\
+bp = Blueprint('post', __name__)\
 
 #helper functions ----------------------------------------------
 
@@ -36,8 +36,8 @@ def make_unique(string):
 def index():
     db = get_db()
     posts = db.execute(
-        'select p.id, title, image, created, author_id, private, username'
-        ' from post p join user u on p.author_id = u.id'
+        'select p.id, title, filepath, created, user_id, private, username, price'
+        ' from posts p join users u on p.user_id = u.id'
         ' order by created desc'
     ).fetchall()
     
@@ -48,10 +48,10 @@ def index():
         if post['private'] == 0:
             temp.append(post)
         elif g.user:
-            if post['author_id'] == g.user['id'] and post['private'] == 1:
+            if post['user_id'] == g.user['id']:
                 temp.append(post)
 
-    return render_template('blog/index.html', posts = temp)
+    return render_template('post/index.html', posts = temp)
 
 
 #create page
@@ -60,16 +60,22 @@ def index():
 def create():
     if request.method == 'POST':
         title = request.form['title']
+        price = None
+        error = None
 
-        #is_private variable uses 0/1 integers since SQLite3 doesn't allow for boolean values anyways
-        print(request.form['privacy'])
+        #is_private variable uses 0/1 integers since SQLite3 doesn't allow for boolean values anyway
         if request.form['privacy'] == 'private':
             is_private = 1
         else:
             is_private = 0
-        
-        error = None
 
+            if not request.form['price']:
+                error = 'Price is required'
+            else:
+                price = int(request.form['price'])
+                if price < 0:
+                    error = 'Price greater than 0 is required'
+            
         if not title:
             error = 'Title is required.'
         
@@ -90,7 +96,6 @@ def create():
         else:
             db = get_db()
             for file in files:
-                print(is_private)
                 #rename the file to unique file
                 unique_filename = make_unique(secure_filename(file.filename))
 
@@ -99,11 +104,39 @@ def create():
 
                 #saving data to db
                 db.execute(
-                    'insert into post (title, image, author_id, private)'
-                    ' values (?,?,?,?)',
-                    (title, unique_filename, g.user['id'], is_private)
+                    'insert into posts (title, filepath, user_id, private, price)'
+                    ' values (?,?,?,?,?)',
+                    (title, unique_filename, g.user['id'], is_private, price)
                 )
             db.commit()
-            return redirect(url_for('blog.index'))
+            return redirect(url_for('post.index'))
     
-    return render_template('blog/create.html')
+    return render_template('post/create.html')
+
+@bp.route('/buy/<int:id>')
+@login_required
+def buy(id):
+    db = get_db()
+    error = None
+    post = db.execute(
+        'select id, user_id, price'
+        ' from posts where id = ?',
+        (id,)
+    ).fetchone()
+    buyer = db.execute('select id, balance from users where id = ?', (g.user['id'],)).fetchone()
+    seller = db.execute('select id, balance from users where id = ?', (post['user_id'],)).fetchone()
+
+    if buyer['balance'] - post['price'] < 0:
+        error = 'User does not have sufficient funds.'
+
+    if error:
+        flash(error)
+    else:
+        #update buyer balance
+        db.execute('update users set balance = ? where id = ?', (buyer['balance'] - post['price'], buyer['id']))
+        #update seller balance
+        db.execute('update users set balance = ? where id = ?', (seller['balance'] + post['price'], seller['id']))
+
+        db.commit()
+        
+    return redirect(url_for('post.index'))
