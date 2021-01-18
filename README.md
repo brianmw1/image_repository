@@ -7,6 +7,7 @@ This project focused on creating a web application similar to instagram (but muc
 - register and login users
 - add image(s)
 - view images based on privacy level of an image and the current session.
+- basic purchasing of images (changing user balances respectively)
 
 The project was built using flask because I was most comfortable with Python and wanted to learn how to use flask. Django seemed to have a higher learning curve not suitable for a time sensitive project.
 
