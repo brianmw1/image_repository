@@ -72,8 +72,8 @@ def create():
             if not request.form['price']:
                 error = 'Price is required'
             else:
-                price = int(request.form['price'])
-                if price < 0:
+                price = float(request.form['price'])
+                if price <= 0:
                     error = 'Price greater than 0 is required'
             
         if not title:
@@ -126,7 +126,7 @@ def buy(id):
     buyer = db.execute('select id, balance from users where id = ?', (g.user['id'],)).fetchone()
     seller = db.execute('select id, balance from users where id = ?', (post['user_id'],)).fetchone()
 
-    if buyer['balance'] - post['price'] < 0:
+    if buyer['balance'] < post['price']:
         error = 'User does not have sufficient funds.'
 
     if error:
