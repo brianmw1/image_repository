@@ -3,7 +3,7 @@ Built this project for the back end developer role at Shopify. See the link belo
 
 https://docs.google.com/document/d/1ZKRywXQLZWOqVOHC4JkF3LqdpO3Llpfk_CkZPR8bjak/edit
 
-This project focused on creating a web application similar to instagram (but much simpler haha) that can:
+This project focused on creating a web applicationn that can:
 - register and login users
 - add image(s)
 - view images based on privacy level of an image and the current session.
