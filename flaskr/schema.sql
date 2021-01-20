@@ -15,7 +15,8 @@ CREATE TABLE posts (
   title TEXT NOT NULL,
   private INTEGER NOT NULL,
   filepath TEXT NOT NULL,
-  price INTEGER,
+  price REAL,
+  stock INTEGER,
   FOREIGN KEY (user_id) REFERENCES user (id)
 );
 

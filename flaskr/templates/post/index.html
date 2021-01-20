@@ -19,6 +19,7 @@
             <img src="{{url_for('static', filename='images/' + post['filepath'])}}" style="max-width:100%;width:100%"/>
             <div class="purchase">
                 <h1>Price: {{ post['price'] }}</h1>
+                <h1>Stock: {{ post['stock'] }}</h1>
                 {% if g.user and g.user['id'] != post['user_id'] %}
                     <a class="action" href="{{ url_for('post.buy', id=post['id']) }}">Buy</a>
                 {% endif %}

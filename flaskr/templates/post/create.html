@@ -16,7 +16,9 @@
             <option value="private">Private</option>
         </select>
         <label for="price">Price (only required for a public image)</label>
-        <input type="number" name="price" id="price" value="{{ request.form['price'] }}">
+        <input type="number" step=".01" name="price" id="price" value="{{ request.form['price'] }}">
+        <label for="stock">Stock (only required for a public image)</label>
+        <input type="number" name="stock" id="stock" value="{{ request.form['stock'] }}">
         <input type="submit" value="Save">
     </form>
 {% endblock %}

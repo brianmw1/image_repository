@@ -13,4 +13,3 @@ sqlite3 db
     -user table
         -login
         -hashed password
-        
